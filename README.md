@@ -14,4 +14,6 @@ I need to add more visuals!
 
 1. Using vectorized functions in numpy
 
+Contributions and feedbacks are welcome! 
+
 @vishalpaudel

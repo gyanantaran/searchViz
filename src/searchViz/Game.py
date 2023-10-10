@@ -2,39 +2,43 @@
 
 
 import pygame
-import time
+import numpy as np
 
-from .constants import SCREEN_SIZE, BG_COLOR, RED, WHITE, NODE_RADIUS, BLUE
+from .constants import SCR_SIZE, BG_COLOR, RED, WHITE, NODE_RADIUS, SEARCH_RATE
 
 from .Search import Search
-from .Graph import nodes, edges
+from .Graph import Graph
 
 
 class Game:
     def __init__(self, search_method: Search, num_nodes: int):
-        # search method
-        self.search_method = search_method
-        self.num_nodes = num_nodes
+        pygame.init()
 
-        _start_time = time.time()
-        print("creating nodes... timer started...")
-        self.nodes = nodes(num_nodes)
-        print("Finished creating nodes!")
-        print("creating edges...")
-        self.edges = edges(self.nodes)
-        _end_time = time.time()
-        _elapsed_time = _end_time - _start_time
-        print(f"Finished creating edges! Took {_elapsed_time:.3f} seconds.")
+        # main attributes of the game
+        self.search_method = search_method
+        self.Graph = Graph(num_nodes)
 
         # pygame initialization
-        pygame.init()
-        self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        self.screen = pygame.display.set_mode(SCR_SIZE)
         pygame.display.set_caption(f"Search Method: {search_method.name}")
 
     def run(self):
-        n = self.num_nodes
-        nodes = self.nodes
+        # unpacking frequently used variables
+        num_nodes = self.Graph.num_nodes
+        nodes = self.Graph.nodes
+        colors = self.Graph.colors
+        radius = self.Graph.radius
+        edges = self.Graph.edges
+
+        open = int(np.random.randint(0, num_nodes, 1)[0])
+        closed = []
+
         screen = self.screen
+
+        step = 1
+        start_search = False
+        font = pygame.font.Font(None, 36)
+        last_step_update_time = pygame.time.get_ticks()
 
         # Precompute some values outside the loop
         bg_surface = pygame.Surface(screen.get_size())
@@ -43,17 +47,27 @@ class Game:
         graph_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
 
         # Draw nodes and their edges
-        for i in range(n):
+        for i in range(num_nodes):
             # Unique (uni-directional) edges
-            for j in range(i, n):
-                if self.edges[i, j]:
+            for j in range(i, num_nodes):
+                if edges[i, j]:
                     pygame.draw.line(graph_surface, WHITE, nodes[i], nodes[j])
 
             node = nodes[i]
-            pygame.draw.circle(graph_surface, BLUE, node, radius=NODE_RADIUS)
+            pygame.draw.circle(
+                graph_surface,
+                color=tuple(colors[i]),
+                center=node,
+                radius=radius[i],
+            )
 
         running = True
         while running:
+            current_time = pygame.time.get_ticks()
+            # Clear the screen once at the beginning of the frame
+            # graph_surface.blit(bg_surface, (0, 0))
+
+            screen.blit(bg_surface, (0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -67,12 +81,55 @@ class Game:
                             (click_x, click_y),
                             radius=5 * NODE_RADIUS,
                         )
+                # Handle spacebar key press
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        start_search = not start_search
 
-            # Clear the screen once at the beginning of the frame
-            screen.blit(bg_surface, (0, 0))
             screen.blit(graph_surface, (0, 0))
 
             # Update game logic here
+            if start_search:
+                # Calculate the time elapsed since the last step update
+                time_elapsed = current_time - last_step_update_time
+
+                # Check if 5 seconds (5000 milliseconds) have passed
+                if time_elapsed >= SEARCH_RATE * 1000:
+                    # Increment the step and update the last step update time
+                    step += 1
+                    last_step_update_time = current_time
+                    # draw node
+
+                    node = nodes[open]
+                    pygame.draw.circle(
+                        graph_surface,
+                        color=RED,
+                        center=nodes[open],
+                        radius=2 * radius[open],
+                    )
+
+                    flag = False
+                    for i in range(open, num_nodes):
+                        connected = edges[open, i]
+                        if connected:
+                            closed.append(i)
+                            open = i
+                            flag = True
+                            break
+
+                    if not flag:
+                        for i in range(0, open):
+                            connected = edges[i, open]
+                            if connected and (i not in closed):
+                                closed.append(i)
+                                open = i
+                                flag = True
+                                break
+                    if not flag:
+                        open = int(np.random.randint(0, num_nodes, 1)[0])
+
+            step_text = font.render(f"Step: {step}", True, (255, 255, 255))
+            screen.blit(step_text, (10, 10))  # Adjust the position as needed
 
             pygame.display.flip()
 

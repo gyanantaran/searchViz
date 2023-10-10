@@ -1,7 +1,9 @@
-# searchViz - Fast and Beautiful Search Visualizer
+# searchViz - A Beautiful 🌹 and ⚡️ Fast Search Visualizer
 
 ## Demo
 https://user-images.githubusercontent.com/95016059/273106123-19ccd387-f563-4078-825d-e62327bfdde7.mp4
+
+I need to add more visuals!
 
 ## Features
 
@@ -11,3 +13,7 @@ https://user-images.githubusercontent.com/95016059/273106123-19ccd387-f563-4078-
 ## Implementation
 
 1. Using vectorized functions in numpy
+
+Contributions and feedbacks are welcome! 
+
+@vishalpaudel

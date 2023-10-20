@@ -1,28 +1,30 @@
 #!/usr/bin/env python
 
+from typing import Callable, List
+
+from .Graph import Node
+
 
 class Search:
-    def __init__(self, name, search_method):
+    def __init__(self, search: Callable[[Node], List[Node]], name: str):
+        self.search = search
         self.name = name
-        self.search = search_method
-
-    def search(self):
-        # returns a method for searching
-        print("Search Method was not defined")
-        raise NotImplementedError
 
 
-def depth_first_search():
+def depth_first_search(startState: Node) -> List[Node]:
     print("Depth First Search")
+    return [startState]
 
 
-def breadth_first_search():
+def breadth_first_search(startState: Node) -> List[Node]:
     print("Breadth First Search")
+    return [startState]
 
 
-dfs = Search("Depth-first search", depth_first_search)
-bfs = Search("Breadth-first search", breadth_first_search)
+dfs = Search(depth_first_search, "Depth-first search")
+bfs = Search(breadth_first_search, "Breadth-first search")
 
 
 if __name__ == "__main__":
-    dfs.search()
+    startState = Node()
+    dfs.search(startState)

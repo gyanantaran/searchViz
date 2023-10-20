@@ -2,8 +2,9 @@
 
 from searchViz.Game import Game
 from searchViz.Search import dfs
-
 from searchViz.constants import NUM_NODES
+
+# to hide the message
 
 
 def main():

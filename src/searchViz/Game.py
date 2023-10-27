@@ -2,6 +2,9 @@
 
 
 import pygame as pg
+import time
+import numpy as np
+
 from .constants import SCR_SIZE, BG_COLOR, RED, WHITE, NODE_RADIUS, SEARCH_RATE
 
 
@@ -10,7 +13,7 @@ from .Graph import Graph
 
 
 class Game:
-    def __init__(self, search_method: Search, num_nodes: int):
+    def __init__(self, search_method: Search, num_nodes: int) -> None:
         pg.init()
 
         # main attributes of the game
@@ -33,7 +36,7 @@ class Game:
 
         print("🐼 searchViz has been initialized! 🎉")
 
-    def handle_events(self):
+    def handle_events(self) -> None:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
@@ -57,34 +60,39 @@ class Game:
 
         return None
 
-    def draw_graph(self):
-        # unpacking frequently used variables
+    def draw_graph(self) -> None:
+        _start_time = time.time()
+        print("✏️\tDrawing the Graph")
+
+        # Unpack frequently used variables
         graph_surf = self.graph_surf
-        num_nodes = self.Graph.num_nodes
-        nodes = self.Graph.nodes
-        colors = self.Graph.colors
-        radius = self.Graph.radius
-        edges = self.Graph.edges
+        num_nodes = self.Graph.N_num
+        nodes = self.Graph.N_locs
+        colors = self.Graph.N_colors
+        radius = self.Graph.N_radii
+        edges = self.Graph.edge_connections
 
-        # need to use this when traversing
-        # edge_colors = self.Graph.edge_color
-
-        # Draw nodes and their edges
+        # Draw nodes
+        # TODO: vectorization of this possible? Probably not
         for i in range(num_nodes):
-            # Unique (uni-directional) edges
-            for j in range(i, num_nodes):
-                if edges[i, j]:
-                    pg.draw.line(graph_surf, WHITE, nodes[i], nodes[j])
-
-            node = nodes[i]
             pg.draw.circle(
-                graph_surf,
-                color=tuple(colors[i]),
-                center=node,
-                radius=radius[i],
+                graph_surf, color=colors[i], center=nodes[i], radius=radius[i]
             )
 
-    def run(self):
+        # Draw edges
+        edge_indices = np.transpose(np.where(edges))
+        for i, j in edge_indices:
+            pg.draw.line(graph_surf, WHITE, nodes[i], nodes[j])
+
+        _end_time = time.time()
+        _elapsed_time = _end_time - _start_time
+        print("✏️\tCompleted the drawing!")
+
+        print(f"\t🕰️ Took {_elapsed_time:.3f} seconds.\n")
+
+        return None
+
+    def run(self) -> None:
         last_time = pg.time.get_ticks()
         step = 0
         self.draw_graph()

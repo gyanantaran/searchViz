@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from .constants import NODES_X_DISTRIBUTION, NODES_Y_DISTRIBUTION
-from .constants import EDGE_CONFIDENCE, RED, BLUE, NODE_RADIUS
+from .constants import EDGE_CONFIDENCE, BLUE, NODE_RADIUS, WHITE
 
 import numpy as np
 import time
@@ -20,16 +20,25 @@ class Node:
 
 
 class Graph:
-    def __init__(self, num_nodes: int):
-        self.num_nodes = num_nodes
+    def __init__(self, n: int):
+        self.N_num = n
 
         _start_time = time.time()
-        self.nodes, self.colors, self.radius = create_nodes(num_nodes)
-        self.edges, self.edge_colors = create_edges(self.nodes)
 
-        start_id, end_id = np.random.randint(0, self.num_nodes, size=2, dtype=np.uint16)
-        self.start_node = Node(start_id)
-        self.end_node = Node(end_id)
+        # start and end nodes
+        start, end = np.random.randint(0, self.N_num, size=2, dtype=np.uint16)
+        self.start_node = Node(start)
+        self.end_node = Node(end)
+
+        # Node stuff
+        self.N = [Node(np.uint16(i)) for i in range(self.N_num)]
+        self.N_locs = create_nodes(self.N_num)
+
+        self.N_colors = np.full((self.N_num, 4), BLUE, dtype=np.uint8)
+        self.N_radii = np.full((self.N_num,), NODE_RADIUS, dtype=np.uint8)
+
+        # Edge stuff
+        self.edge_connections, self.edge_colors = create_edges(self.N_locs)
 
         _end_time = time.time()
         _elapsed_time = _end_time - _start_time
@@ -47,12 +56,12 @@ class Graph:
         neighbors = []
 
         id = np.uint16(0)
-        while id < self.num_nodes:
-            if [id, state.id] == 1:
+        while id < self.N_num:
+            if self.edge_connections[id, state.id] == 1:
                 neighbors.append(Node(id))
             id += 1
 
-        print()
+            print()
         return neighbors
 
     def goalTest(self, state: Node) -> bool:
@@ -76,24 +85,18 @@ def create_nodes(n: int):
     x_values = NODES_X_DISTRIBUTION(n)
     y_values = NODES_Y_DISTRIBUTION(n)
 
-    colors = np.full((n, 4), fill_value=BLUE, dtype=np.uint8)
-    radii = np.full((n,), fill_value=NODE_RADIUS, dtype=np.uint8)
+    node_locs = np.column_stack((x_values, y_values))
 
-    # generating the goal node
-    goal_loc = np.random.randint(0, n, 1)
-    colors[goal_loc] = RED
-    radii[goal_loc] = 3 * NODE_RADIUS
-
-    nodes = np.column_stack((x_values, y_values))
     print("✅\tFinished creating nodes!\n")
 
-    return nodes, colors, radii
+    return node_locs
 
 
 def create_edges(nodes: np.ndarray):
     """
     Creates edges for the give nodes locations
     """
+    # TODO: need to seperate the threading or remove the animation
     global done
     done = threading.Event()
 
@@ -101,23 +104,23 @@ def create_edges(nodes: np.ndarray):
     dot_thread.start()
 
     n = len(nodes)
-    edges = np.zeros((n, n))
-    i, j = np.triu_indices(n, k=1)
+    edge_connections = np.zeros((n, n))
+    i, j = np.triu_indices(n, k=1)  # only one way edges
 
     _toss = np.random.rand(n, n)
     _confidence = np.zeros((n, n))
     _confidence[i, j] = EDGE_CONFIDENCE(nodes[i], nodes[j])
 
     # confidence number of times there will be an edge
-    edges = _toss <= _confidence
-    edge_color = (edges).astype(int)
+    edge_connections = _toss <= _confidence
+    edge_colors = np.full((n, 4), fill_value=WHITE, dtype=np.uint8)
 
     # Stop the dot animation
     done.set()
     dot_thread.join()  # Wait for the animation thread to finish
 
     print("\n✅\tFinished creating edges!\n")
-    return edges, edge_color
+    return edge_connections, edge_colors
 
 
 # for animating while the edges get created

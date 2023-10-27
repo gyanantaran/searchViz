@@ -39,3 +39,4 @@ EDGE_CONFIDENCE = edge_dist_wrapper(
 RED = (255, 0, 0, 255)
 BLUE = (0, 255, 255, 255)
 WHITE = (255, 255, 255, 200)
+YELLOW = (255, 255, 153, 200)

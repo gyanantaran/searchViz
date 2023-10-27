@@ -4,10 +4,12 @@
 
 import numpy as np
 
+import numpy.typing as npt
+
 
 # distribution of nodes
 def nodes_dist_wrapper(length: int, model: str):
-    def nodes_uniform(n: int):
+    def nodes_uniform(n: int) -> npt.NDArray[np.float64]:
         # return np.random.normal(length / 2, length / 5, n)
         return np.random.uniform(0, length, n)
 

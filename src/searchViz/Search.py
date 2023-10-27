@@ -1,32 +1,30 @@
 #!/usr/bin/env python
 
-from typing import Callable, List
-
-from .Graph import Node
-
-import numpy as np
+from .search_utils import ReconstructPath, MakePairs, RemoveSeen
 
 
-class Search:
-    def __init__(self, search: Callable[[Node], List[Node]], name: str):
-        self.search = search
-        self.name = name
+def depthfirstsearch(self, start_state):
+    open = [(start_state, None)]
+    closed = []
 
+    while len(open) > 0 and len(closed) < 50:
+        print(f"open: {len(open)}")
+        print(f"closed: {len(closed)}")
+        nodePair = open[0]
+        node = nodePair[0]
+        # print(node)
+        # print(f"closed {closed}")
+        # print()
+        if self.GoalTest(node) is True:
+            print("Found goal!")
+            return ReconstructPath(nodePair, closed)
+        else:
+            closed = [nodePair] + closed
+            children = self.MoveGen(node)
+            noLoops = RemoveSeen(children, open, closed)
+            new = MakePairs(noLoops, node)
+            open = new + open[1:]  # The only change from DFS
+            yield open
 
-def depth_first_search(startState: Node) -> List[Node]:
-    print("Depth First Search")
-    return [startState]
-
-
-def breadth_first_search(startState: Node) -> List[Node]:
-    print("Breadth First Search")
-    return [startState]
-
-
-dfs = Search(depth_first_search, "Depth-first search")
-bfs = Search(breadth_first_search, "Breadth-first search")
-
-
-if __name__ == "__main__":
-    startState = Node(np.uint16(1))
-    dfs.search(startState)
+    print("No path found")
+    return -1

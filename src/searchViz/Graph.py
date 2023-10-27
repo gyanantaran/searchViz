@@ -5,7 +5,7 @@ from .constants import EDGE_CONFIDENCE, BLUE, NODE_RADIUS, WHITE
 
 import numpy as np
 import time
-from typing import List
+from typing import List, Callable
 
 import threading
 
@@ -45,11 +45,14 @@ class Graph:
 
         print(f"\t🕰️ Took {_elapsed_time:.3f} seconds.\n")
 
+        # The search function
+        self.run: Callable[[Node], List[Node]]
+
     ########################################################################
     #                   THE MOVEGEN AND GOALTEST FUNCTIONS
     ########################################################################
 
-    def moveGen(self, state: Node) -> List[Node]:
+    def MoveGen(self, state: Node) -> List[Node]:
         """
         Takes a state and returns an array of neighbors
         """
@@ -64,7 +67,7 @@ class Graph:
             print()
         return neighbors
 
-    def goalTest(self, state: Node) -> bool:
+    def GoalTest(self, state: Node) -> bool:
         print(state)
         return True
 

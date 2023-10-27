@@ -8,16 +8,14 @@ import numpy as np
 from .constants import SCR_SIZE, BG_COLOR, RED, WHITE, NODE_RADIUS, SEARCH_RATE
 
 
-from .Search import Search
 from .Graph import Graph
 
 
 class Game:
-    def __init__(self, search_method: Search, num_nodes: int) -> None:
+    def __init__(self, search_method: search_method, num_nodes: int) -> None:
         pg.init()
 
         # main attributes of the game
-        self.search_method = search_method
         self.Graph = Graph(num_nodes)
 
         # pg initialization
@@ -82,7 +80,8 @@ class Game:
         # Draw edges
         edge_indices = np.transpose(np.where(edges))
         for i, j in edge_indices:
-            pg.draw.line(graph_surf, WHITE, nodes[i], nodes[j])
+            # TODO: tuple type conversion overhead? Probably not
+            pg.draw.line(graph_surf, WHITE, tuple(nodes[i]), tuple(nodes[j]))
 
         _end_time = time.time()
         _elapsed_time = _end_time - _start_time
@@ -115,5 +114,7 @@ class Game:
                     step += 1
                     last_time = cur_time
                     # APPLY SEARCH HERE
+
+                    self.Search.run()
 
         pg.quit()

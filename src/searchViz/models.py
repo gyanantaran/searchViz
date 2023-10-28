@@ -3,34 +3,43 @@
 # contains the models for edges and nodes
 
 import numpy as np
+from typing import Callable
+from numpy.typing import NDArray
 
-import numpy.typing as npt
+# TODO: because of circular import issues
+NodeLocs = NDArray[np.float64]
 
 
 # distribution of nodes
-def nodes_dist_wrapper(length: int, model: str):
-    def nodes_uniform(n: int) -> npt.NDArray[np.float64]:
+def N_Distbn(length: int, model: str) -> Callable[[int], NodeLocs]:
+    """Return a function to generate a distribution given number of nodes"""
+
+    def nodes_uniform(n: int) -> NDArray[np.float64]:
         # return np.random.normal(length / 2, length / 5, n)
         return np.random.uniform(0, length, n)
 
-    def nodes_gaussian(n: int):
+    def nodes_gaussian(n: int) -> NDArray[np.float64]:
         return np.random.normal(length / 2, length / 5, n)
         # return np.random.uniform(0, length, n)
 
     return nodes_gaussian if model == "gaussian" else nodes_uniform
 
 
-def edge_dist_wrapper(max_edge_len: float, min_edge_len: float, model: str):
-    def edge_threshold(node1: np.ndarray, node2: np.ndarray) -> int:
-        distance = np.linalg.norm(node1 - node2, axis=1)
-        return (min_edge_len <= distance) & (distance <= max_edge_len)
+def E_Distbn(
+    max_len: float, min_len: float, model: str
+) -> Callable[[NodeLocs, NodeLocs], NDArray[np.float64]]:
+    """Return a function to generate a edge distribution given"""
 
-    def edge_exp(node1: np.ndarray, node2: np.ndarray) -> float:
+    def edge_thresh(node1: NodeLocs, node2: NodeLocs) -> NDArray[np.float64]:
+        distance = np.linalg.norm(node1 - node2, axis=1)
+        return (min_len <= distance) & (distance <= max_len)
+
+    def edge_exp(node1: NodeLocs, node2: NodeLocs) -> NDArray[np.float64]:
         # Return probability of edge based on distance between the nodes
 
         # Temp calculations for lambda value
-        x0 = max_edge_len
-        y0 = 0.1
+        x0 = max_len
+        y0 = 0.06
         lam = -1 * np.log(y0) / x0
 
         distance = np.linalg.norm(node1 - node2, axis=1)
@@ -41,4 +50,4 @@ def edge_dist_wrapper(max_edge_len: float, min_edge_len: float, model: str):
 
         return prob
 
-    return edge_exp if model == "exponential" else edge_threshold
+    return edge_exp if model == "exponential" else edge_thresh

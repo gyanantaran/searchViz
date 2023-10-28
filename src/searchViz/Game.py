@@ -9,19 +9,24 @@ from .constants import SCR_SIZE, BG_COLOR, RED, WHITE, NODE_RADIUS, SEARCH_RATE
 
 
 from .Graph import Graph
+from ._typing import NodeCount, SearchMethod
+
+from .Search import Search
 
 
 class Game:
-    def __init__(self, search_method: search_method, num_nodes: int) -> None:
+    def __init__(self, search: Search, num_nodes: NodeCount) -> None:
         pg.init()
 
         # main attributes of the game
-        self.Graph = Graph(num_nodes)
+        self.graph = Graph(num_nodes)
+        self.search = search
+        self.search.graph = self.graph
 
         # pg initialization
         self.screen = pg.display.set_mode(SCR_SIZE)
         self.graph_surf = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
-        pg.display.set_caption(f"Search Method: {search_method.name}")
+        pg.display.set_caption(f"Search Method: {search.name}")
 
         # more helper attributes
         self.font = pg.font.Font(None, 36)
@@ -60,15 +65,21 @@ class Game:
 
     def draw_graph(self) -> None:
         _start_time = time.time()
-        print("✏️\tDrawing the Graph")
+        print("\n🕰️\tDrawing the Graph")
 
         # Unpack frequently used variables
         graph_surf = self.graph_surf
-        num_nodes = self.Graph.N_num
-        nodes = self.Graph.N_locs
-        colors = self.Graph.N_colors
-        radius = self.Graph.N_radii
-        edges = self.Graph.edge_connections
+        num_nodes = self.graph.N_num
+        nodes = self.graph.N_locs
+        colors = self.graph.N_colors
+        radius = self.graph.N_radii
+        edges = self.graph.edge_connections
+
+        # Draw edges
+        edge_indices = np.transpose(np.where(edges))
+        for i, j in edge_indices:
+            # TODO: tuple type conversion overhead? Probably not
+            pg.draw.line(graph_surf, WHITE, tuple(nodes[i]), tuple(nodes[j]))
 
         # Draw nodes
         # TODO: vectorization of this possible? Probably not
@@ -77,15 +88,12 @@ class Game:
                 graph_surf, color=colors[i], center=nodes[i], radius=radius[i]
             )
 
-        # Draw edges
-        edge_indices = np.transpose(np.where(edges))
-        for i, j in edge_indices:
-            # TODO: tuple type conversion overhead? Probably not
-            pg.draw.line(graph_surf, WHITE, tuple(nodes[i]), tuple(nodes[j]))
+            _txt = self.font.render(f"{i}", 1, (255, 255, 255))
+            graph_surf.blit(_txt, nodes[i])
 
         _end_time = time.time()
         _elapsed_time = _end_time - _start_time
-        print("✏️\tCompleted the drawing!")
+        print("✅\tCompleted the drawing!\n")
 
         print(f"\t🕰️ Took {_elapsed_time:.3f} seconds.\n")
 
@@ -95,6 +103,8 @@ class Game:
         last_time = pg.time.get_ticks()
         step = 0
         self.draw_graph()
+
+        generated_open = self.search.search()
         while self.running:
             cur_time = pg.time.get_ticks()
 
@@ -114,7 +124,10 @@ class Game:
                     step += 1
                     last_time = cur_time
                     # APPLY SEARCH HERE
-
-                    self.Search.run()
+                    try:
+                        print(next(generated_open))
+                    except StopIteration:
+                        print("Goal Not found")
+                        self.start_search = False
 
         pg.quit()

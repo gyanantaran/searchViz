@@ -4,11 +4,15 @@ from searchViz.Game import Game
 from searchViz.Search import depthfirstsearch
 from searchViz.constants import NUM_NODES
 
+from searchViz._typing import NodeCount
+
 # to hide the message
 
 
 def main():
-    aGame = Game(search_method=depthfirstsearch, num_nodes=NUM_NODES)
+    dfs = depthfirstsearch()
+
+    aGame = Game(search=dfs, num_nodes=NodeCount(NUM_NODES))
 
     aGame.run()
 

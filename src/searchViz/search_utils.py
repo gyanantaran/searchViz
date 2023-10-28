@@ -2,35 +2,26 @@
 
 
 def RemoveSeen(nodeList, openList, closedList):
-    """A recursive function to remove seen nodes from nodeList"""
-    if nodeList == []:
-        return []
-    else:
-        n = nodeList[0]
-        if OccursIn(n, openList) or OccursIn(n, closedList):
-            return RemoveSeen(nodeList[1:], openList, closedList)
-        else:
-            return [n] + RemoveSeen(nodeList[1:], openList, closedList)
+    """An iterative function to remove seen nodes from nodeList"""
+    result = []
+    for n in nodeList:
+        if not (OccursIn(n, openList) or OccursIn(n, closedList)):
+            result.append(n)
+    return result
 
 
 def OccursIn(node, listOfPairs):
-    """Returns true if node[0] in the pairs[0] inside listOfPairs"""
-    if listOfPairs == []:
-        return False
-    else:
-        if node == listOfPairs[0][0]:
-            # print(f"The node {node} \n\n {listOfPairs}\n")
+    for pair in listOfPairs:
+        if node.id == pair[0].id:
             return True
-        else:
-            # print(f"for node {node} \n\n is not in {listOfPairs}\n")
-            return OccursIn(node, listOfPairs[1:])
+    return False
 
 
 def MakePairs(list, parent):
-    if list == []:
-        return []
-    else:
-        return [(list[0], parent)] + MakePairs(list[1:], parent)
+    pairs = []
+    for item in list:
+        pairs.append((item, parent))
+    return pairs
 
 
 def ReconstructPath(nodePair, closed):
@@ -47,7 +38,7 @@ def ReconstructPath(nodePair, closed):
 
 
 def FindLink(child, closed):
-    if child == closed[0][0]:
-        return closed[0]
-    else:
-        return FindLink(child, closed[1:])
+    for link in closed:
+        if child == link[0]:
+            return link
+    return []

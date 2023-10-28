@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from searchViz.Game import Game
-from searchViz.Search import depthfirstsearch
+from searchViz.Search import depthfirstsearch, breadthfirstsearch
 from searchViz.constants import NUM_NODES
 
 from searchViz._typing import NodeCount
@@ -11,8 +11,9 @@ from searchViz._typing import NodeCount
 
 def main():
     dfs = depthfirstsearch()
+    bfs = breadthfirstsearch()
 
-    aGame = Game(search=dfs, num_nodes=NodeCount(NUM_NODES))
+    aGame = Game(search=bfs, num_nodes=NodeCount(NUM_NODES))
 
     aGame.run()
 

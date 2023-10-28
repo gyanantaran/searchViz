@@ -88,8 +88,8 @@ class Game:
                 graph_surf, color=colors[i], center=nodes[i], radius=radius[i]
             )
 
-            _txt = self.font.render(f"{i}", 1, (255, 255, 255))
-            graph_surf.blit(_txt, nodes[i])
+            # _txt = self.font.render(f"{i}", 1, (255, 255, 255))
+            # graph_surf.blit(_txt, nodes[i])
 
         _end_time = time.time()
         _elapsed_time = _end_time - _start_time
@@ -125,9 +125,11 @@ class Game:
                     last_time = cur_time
                     # APPLY SEARCH HERE
                     try:
-                        print(next(generated_open))
+                        next(generated_open)
+                        self.graph.update_nodes()
+                        self.draw_graph()
+
                     except StopIteration:
-                        print("Goal Not found")
                         self.start_search = False
 
         pg.quit()

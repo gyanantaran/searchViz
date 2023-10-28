@@ -29,11 +29,10 @@ def ReconstructPath(nodePair, closed):
     parent = nodePair[1]
 
     while parent is not None:
-        path = parent + path
+        path = [parent] + path
         nodePair = FindLink(parent, closed)
 
         parent = nodePair[1]
-    print(path)
     return path
 
 

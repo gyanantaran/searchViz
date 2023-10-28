@@ -39,6 +39,9 @@ class Graph:
         # Edge stuff
         self.edge_connections, self.edge_colors = create_edges(self.N_locs)
 
+        # Search stuff
+        self.open_ids, self.closed_ids = [], []
+
         _end_time = time.time()
         _elapsed_time = _end_time - _start_time
 
@@ -67,8 +70,21 @@ class Graph:
         return neighbors
 
     def GoalTest(self, state: NodeType) -> bool:
-        print(state.id, self.goal_node.id)
-        return state.id == self.goal_node.id
+        foundGoal = state.id == self.goal_node.id
+        if foundGoal:
+            print(state.id, "equals", self.goal_node.id)
+        else:
+            print(state.id, "does not equal", self.goal_node.id)
+        return foundGoal
+
+    def update_nodes(self):
+        for open_ids in self.open_ids:
+            self.N_colors[open_ids[0].id] = BLUE
+            self.N_radii[open_ids[0].id] = 2 * NODE_RADIUS
+
+        for closed_ids in self.closed_ids:
+            self.N_colors[closed_ids[0].id] = WHITE
+            self.N_radii[closed_ids[0].id] = 4 * NODE_RADIUS
 
 
 def create_nodes(n: NodeCount) -> NodeLocs:

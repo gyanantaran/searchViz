@@ -5,7 +5,14 @@ import pygame as pg
 import time
 import numpy as np
 
-from .constants import SCR_SIZE, BG_COLOR, RED, WHITE, NODE_RADIUS, SEARCH_RATE
+from .constants import (
+    EDGE_COLOR,
+    SCR_SIZE,
+    BG_COLOR,
+    RED,
+    NODE_RADIUS,
+    SEARCH_RATE,
+)
 
 
 from .Graph import Graph
@@ -79,7 +86,7 @@ class Game:
         edge_indices = np.transpose(np.where(edges))
         for i, j in edge_indices:
             # TODO: tuple type conversion overhead? Probably not
-            pg.draw.line(graph_surf, WHITE, tuple(nodes[i]), tuple(nodes[j]))
+            pg.draw.line(graph_surf, EDGE_COLOR, tuple(nodes[i]), tuple(nodes[j]))
 
         # Draw nodes
         # TODO: vectorization of this possible? Probably not
@@ -127,6 +134,7 @@ class Game:
                     try:
                         next(generated_open)
                         self.graph.update_nodes()
+                        self.graph_surf.blit(self.bg_surf, (0, 0))
                         self.draw_graph()
 
                     except StopIteration:

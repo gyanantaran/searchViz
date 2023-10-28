@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .constants import NODES_X_DISTRIBUTION, NODES_Y_DISTRIBUTION, RED, YELLOW
+from .constants import BLACK, NODES_X_DISTRIBUTION, NODES_Y_DISTRIBUTION, RED, YELLOW
 from .constants import EDGE_CONFIDENCE, BLUE, NODE_RADIUS, WHITE
 
 import numpy as np
@@ -80,11 +80,11 @@ class Graph:
     def update_nodes(self):
         for open_ids in self.open_ids:
             self.N_colors[open_ids[0].id] = BLUE
-            self.N_radii[open_ids[0].id] = 2 * NODE_RADIUS
+            self.N_radii[open_ids[0].id] = 4 * NODE_RADIUS
 
         for closed_ids in self.closed_ids:
-            self.N_colors[closed_ids[0].id] = WHITE
-            self.N_radii[closed_ids[0].id] = 4 * NODE_RADIUS
+            self.N_colors[closed_ids[0].id] = BLACK
+            self.N_radii[closed_ids[0].id] = 1.5 * NODE_RADIUS
 
 
 def create_nodes(n: NodeCount) -> NodeLocs:

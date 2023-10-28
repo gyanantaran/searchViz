@@ -7,11 +7,10 @@ from .models import N_Distbn, E_Distbn
 SCREEN_WIDTH = 1350
 SCREEN_HEIGHT = 850
 SCR_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-BG_COLOR = (0, 0, 0)  # Background color (RGB)
 
 
 # Search configuration
-NUM_NODES = 5000
+NUM_NODES = 10000
 NODE_RADIUS = 2
 
 SEARCH_RATE = 0.0005
@@ -37,3 +36,7 @@ RED = (255, 0, 0, 255)
 BLUE = (0, 255, 255, 255)
 WHITE = (255, 255, 255, 255)
 YELLOW = (255, 255, 153, 200)
+BLACK = (0, 0, 0, 255)
+
+BG_COLOR = WHITE  # Background color (RGB)
+EDGE_COLOR = BLACK

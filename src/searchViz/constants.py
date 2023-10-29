@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from .models import N_Distbn, E_Distbn
+from .Search import depthfirstsearch, breadthfirstsearch
 
 
 # Screen configuration
@@ -10,8 +11,8 @@ SCR_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 
 # Search configuration
+SEARCH_METHOD = depthfirstsearch
 SEARCH_RATE = 0.05
-SEARCH_METHOD = "DFS"
 
 # Graph configuration
 NUM_NODES = 2000

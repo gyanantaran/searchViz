@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 from .search_utils import ReconstructPath, MakePairs, RemoveSeen
-from .Graph import Graph
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .Graph import Graph
 
 
 class Search:

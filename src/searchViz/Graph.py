@@ -18,14 +18,16 @@ import threading
 
 
 class Graph:
-    def __init__(self, n: NodeCount):
+    def __init__(self, n: NodeCount | int):
         self.N_num = n
 
         _start_time = time.time()
 
         # Node stuff
         self.N = arange(0, self.N_num, dtype=NodeCount)
-        self.N_locs = create_nodes(self.N_num)
+        self.N_locs = create_nodes(
+            NodeCount(self.N_num)
+        )  # for typecasting int to np.uint16
 
         self.N_colors = full((self.N_num, 4), colors["BLUE"], dtype=uint8)
         self.N_radii = full((self.N_num,), NODE_RADIUS, dtype=uint8)

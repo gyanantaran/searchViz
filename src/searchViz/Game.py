@@ -22,7 +22,7 @@ from .Search import Search
 
 
 class Game:
-    def __init__(self, search: Search, num_nodes: NodeCount) -> None:
+    def __init__(self, search: Search, num_nodes: NodeCount | int) -> None:
         pg.init()
 
         # main attributes of the game

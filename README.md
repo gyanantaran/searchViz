@@ -2,7 +2,7 @@
 
 ## Demo
 
-[![Demo video -- searchViz](https://i.ibb.co/Wf1G03n/search-Viz-YT-thumbnail-GH.png)](https://www.youtube.com/watch?v=kNGsOoWh9fM&t=38s&ab_channel=VishalPaudel)
+[![Demo video -- searchViz](https://i.ibb.co/Wf1G03n/search-Viz-YT-thumbnail-GH.png)](https://youtu.be/kNGsOoWh9fM?t=2)
 
 
 

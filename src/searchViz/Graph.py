@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
-from .constants import BLACK, NODES_X_DISTRIBUTION, NODES_Y_DISTRIBUTION, RED, YELLOW
-from .constants import EDGE_CONFIDENCE, BLUE, NODE_RADIUS, WHITE
+from .constants import (
+    N_X_DISTRIBUTION,
+    N_Y_DISTRIBUTION,
+    colors,
+    EDGE_CONFIDENCE,
+    NODE_RADIUS,
+)
 
-import numpy as np
+from numpy import random, column_stack, zeros, triu_indices, arange, full, uint8
 import time
 
 from ._typing import NodeType, NodeList, NodeLocs, NodeCount
@@ -19,19 +24,19 @@ class Graph:
         _start_time = time.time()
 
         # Node stuff
-        self.N = np.arange(0, self.N_num, dtype=NodeCount)
+        self.N = arange(0, self.N_num, dtype=NodeCount)
         self.N_locs = create_nodes(self.N_num)
 
-        self.N_colors = np.full((self.N_num, 4), BLUE, dtype=np.uint8)
-        self.N_radii = np.full((self.N_num,), NODE_RADIUS, dtype=np.uint8)
+        self.N_colors = full((self.N_num, 4), colors["BLUE"], dtype=uint8)
+        self.N_radii = full((self.N_num,), NODE_RADIUS, dtype=uint8)
 
         # start and end nodes
-        start, goal = np.random.randint(0, self.N_num, size=2, dtype=NodeCount)
+        start, goal = random.randint(0, self.N_num, size=2, dtype=NodeCount)
         self.start_node = Node(start)
         self.goal_node = Node(goal)
 
-        self.N_colors[self.start_node.id] = YELLOW
-        self.N_colors[self.goal_node.id] = RED
+        self.N_colors[self.start_node.id] = colors["YELLOW"]
+        self.N_colors[self.goal_node.id] = colors["RED"]
 
         self.N_radii[self.start_node.id] = 5 * NODE_RADIUS
         self.N_radii[self.goal_node.id] = 5 * NODE_RADIUS
@@ -57,7 +62,7 @@ class Graph:
         """
         neighbors = []
 
-        id = np.uint16(0)
+        id = NodeCount(0)
         while id < self.N_num:
             if (
                 self.edge_connections[id, state.id]
@@ -66,24 +71,19 @@ class Graph:
                 neighbors.append(Node(id))
             id += 1
 
-            print()
         return neighbors
 
     def GoalTest(self, state: NodeType) -> bool:
         foundGoal = state.id == self.goal_node.id
-        if foundGoal:
-            print(state.id, "equals", self.goal_node.id)
-        else:
-            print(state.id, "does not equal", self.goal_node.id)
         return foundGoal
 
     def update_nodes(self):
         for open_ids in self.open_ids:
-            self.N_colors[open_ids[0].id] = BLUE
+            self.N_colors[open_ids[0].id] = colors["BLUE"]
             self.N_radii[open_ids[0].id] = 4 * NODE_RADIUS
 
         for closed_ids in self.closed_ids:
-            self.N_colors[closed_ids[0].id] = BLACK
+            self.N_colors[closed_ids[0].id] = colors["RED"]
             self.N_radii[closed_ids[0].id] = 1.5 * NODE_RADIUS
 
 
@@ -100,17 +100,17 @@ def create_nodes(n: NodeCount) -> NodeLocs:
     """
 
     print(f"🕰️\tCreating {n} nodes... timer started...")
-    x_values = NODES_X_DISTRIBUTION(int(n))
-    y_values = NODES_Y_DISTRIBUTION(int(n))
+    x_values = N_X_DISTRIBUTION(int(n))
+    y_values = N_Y_DISTRIBUTION(int(n))
 
-    node_locs = np.column_stack((x_values, y_values))
+    node_locs = column_stack((x_values, y_values))
 
     print("✅\tFinished creating nodes!\n")
 
     return node_locs
 
 
-def create_edges(nodes: np.ndarray):
+def create_edges(nodes: NodeLocs):
     """
     Creates edges for the give nodes locations
     """
@@ -122,16 +122,16 @@ def create_edges(nodes: np.ndarray):
     dot_thread.start()
 
     n = len(nodes)
-    edge_connections = np.zeros((n, n))
-    i, j = np.triu_indices(n, k=1)  # only one way edges
+    edge_connections = zeros((n, n))
+    i, j = triu_indices(n, k=1)  # only one way edges
 
-    _toss = np.random.rand(n, n)
-    _confidence = np.zeros((n, n))
+    _toss = random.rand(n, n)
+    _confidence = zeros((n, n))
     _confidence[i, j] = EDGE_CONFIDENCE(nodes[i], nodes[j])
 
     # confidence number of times there will be an edge
     edge_connections = _toss <= _confidence
-    edge_colors = np.full((n, 4), fill_value=WHITE, dtype=np.uint8)
+    edge_colors = full((n, 4), fill_value=colors["WHITE"], dtype=uint8)
 
     # Stop the dot animation
     done.set()

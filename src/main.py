@@ -13,7 +13,7 @@ def main():
     dfs = depthfirstsearch()
     bfs = breadthfirstsearch()
 
-    aGame = Game(search=bfs, num_nodes=NodeCount(NUM_NODES))
+    aGame = Game(search=dfs, num_nodes=NodeCount(NUM_NODES))
 
     aGame.run()
 

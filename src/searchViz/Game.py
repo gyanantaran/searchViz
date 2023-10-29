@@ -6,7 +6,7 @@ import time
 import numpy as np
 
 from .constants import (
-    EDGE_COLOR,
+    E_COLOR,
     SCR_SIZE,
     BG_COLOR,
     RED,
@@ -16,7 +16,7 @@ from .constants import (
 
 
 from .Graph import Graph
-from ._typing import NodeCount, SearchMethod
+from ._typing import NodeCount
 
 from .Search import Search
 
@@ -86,7 +86,7 @@ class Game:
         edge_indices = np.transpose(np.where(edges))
         for i, j in edge_indices:
             # TODO: tuple type conversion overhead? Probably not
-            pg.draw.line(graph_surf, EDGE_COLOR, tuple(nodes[i]), tuple(nodes[j]))
+            pg.draw.line(graph_surf, E_COLOR, tuple(nodes[i]), tuple(nodes[j]))
 
         # Draw nodes
         # TODO: vectorization of this possible? Probably not

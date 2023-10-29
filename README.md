@@ -1,7 +1,9 @@
 # searchViz - A Beautiful 🌹 and ⚡️ Fast Search Visualizer
 
 ## Demo
-https://user-images.githubusercontent.com/95016059/273106123-19ccd387-f563-4078-825d-e62327bfdde7.mp4
+https://www.youtube.com/watch?v=kNGsOoWh9fM&t=38s&ab_channel=VishalPaudel
+
+<!-- https://user-images.githubusercontent.com/95016059/273106123-19ccd387-f563-4078-825d-e62327bfdde7.mp4 -->
 
 I need to add more visuals!
 

@@ -1,7 +1,10 @@
 # searchViz - A Beautiful 🌹 and ⚡️ Fast Search Visualizer
 
 ## Demo
-[![searchViz-YT-thumbnail-GH](https://github.com/gyanantaran/searchViz/raw/main/assets/95016059/8855be74-9cf0-4cc3-baad-f852f03a35e2.png)](https://www.youtube.com/watch?v=kNGsOoWh9fM&t=38s&ab_channel=VishalPaudel)
+
+[![searchViz-YT-thumbnail-GH](https://github.com/gyanantaran/searchViz/assets/95016059/4149c3a2-432d-43f4-a111-38b544c4d2bd)](https://www.youtube.com/watch?v=kNGsOoWh9fM&t=38s&ab_channel=VishalPaudel)
+
+
 
 
 <!-- https://user-images.githubusercontent.com/95016059/273106123-19ccd387-f563-4078-825d-e62327bfdde7.mp4 -->

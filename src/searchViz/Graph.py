@@ -8,7 +8,7 @@ from .constants import (
     NODE_RADIUS,
 )
 
-from numpy import random, column_stack, zeros, triu_indices, arange, full, uint8
+from numpy import arange, full, uint8, random, column_stack, zeros, triu_indices
 import time
 
 from ._typing import NodeType, NodeList, NodeLocs, NodeCount
@@ -37,11 +37,11 @@ class Graph:
         self.start_node = Node(start)
         self.goal_node = Node(goal)
 
-        self.N_colors[self.start_node.id] = colors["YELLOW"]
-        self.N_colors[self.goal_node.id] = colors["RED"]
+        self.N_colors[start] = colors["YELLOW"]
+        self.N_colors[goal] = colors["RED"]
 
-        self.N_radii[self.start_node.id] = 5 * NODE_RADIUS
-        self.N_radii[self.goal_node.id] = 5 * NODE_RADIUS
+        self.N_radii[start] = 5 * NODE_RADIUS
+        self.N_radii[goal] = 5 * NODE_RADIUS
 
         # Edge stuff
         self.edge_connections, self.edge_colors = create_edges(self.N_locs)

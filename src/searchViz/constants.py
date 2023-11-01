@@ -14,11 +14,11 @@ SCR_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 
 # Search configuration
-SEARCH_METHOD = "bfs"  # depthfirstsearch
+SEARCH_METHOD = "dfs"  # depthfirstsearch
 SEARCH_RATE = 1
 
 # Graph configuration
-NUM_NODES = 2500
+NUM_NODES = 5000
 NODE_RADIUS = 2
 
 

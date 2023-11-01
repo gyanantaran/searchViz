@@ -95,8 +95,6 @@ class Game:
         _txt = self.font.render(f"searchViz: {self.mode_iteration}", 1, (255, 255, 255))
         self.screen.blit(_txt, (10, 10))
 
-        pg.display.flip()
-
     def run(self) -> None:
         last_time = pg.time.get_ticks()
         self.mode.draw_graph(self.graph_surf)
@@ -120,5 +118,7 @@ class Game:
 
                     self.mode_iteration += 1
                     last_time = cur_time
+
+            pg.display.flip()
 
         pg.quit()

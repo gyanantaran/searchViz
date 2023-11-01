@@ -2,18 +2,20 @@
 
 from .search_utils import ReconstructPath, MakePairs, RemoveSeen
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .Graph import Graph
 
 
-class Search:
-    def __init__(self, name, graph: Graph):
+class Search(ABC):
+    def __init__(self, name: str, graph):
         self.name = name
         # self.search = types.MethodType(search, Search)
-        self.graph = graph
+        self.graph: Graph = graph
 
+    @abstractmethod
     def search(self):
         raise NotImplementedError
 
@@ -21,33 +23,34 @@ class Search:
 class depthfirstsearch(Search):
     def __init__(self):
         self.name = "DFS"
-        self.graph: Graph
+        self.graph : Graph
 
         self.i = 0
 
     def search(self):
-        open = [(self.graph.start_node, None)]
+        open = [(self.graph.start, None)]
         closed = []
-
-        print(open[0][0].id)
 
         while len(open) > 0:
             nodePair = open[0]
             node = nodePair[0]
             if self.graph.GoalTest(node):
                 print("Found goal!")
-                path = [node.id for node in ReconstructPath(nodePair, closed)]
+                path = [node for node in ReconstructPath(nodePair, closed)]
                 print(path)
                 return path
             else:
-                closed = [nodePair] + closed
+                closed.insert(0, nodePair)
+                self.graph.closed_ids.insert(0, nodePair[0])
+
+                # the following methods are time-hogs because of stack creations because of function calls
                 children = self.graph.MoveGen(node)
                 noLoops = RemoveSeen(children, open, closed)
                 new = MakePairs(noLoops, node)
-                open = new + open[1:]  # The only change from DFS
 
-                self.graph.open_ids = open
-                self.graph.closed_ids = closed
+                open[0:1] = new
+                self.graph.open_ids[0:1] = [node[0] for node in new]
+
 
                 yield
         print("No path found")
@@ -62,10 +65,8 @@ class breadthfirstsearch(Search):
         self.i = 0
 
     def search(self):
-        open = [(self.graph.start_node, None)]
+        open = [(self.graph.start, None)]
         closed = []
-
-        print(open[0][0].id)
 
         while len(open) > 0:
             nodePair = open[0]

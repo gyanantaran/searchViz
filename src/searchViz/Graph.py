@@ -34,8 +34,8 @@ class Graph:
 
         # start and end nodes
         start, goal = random.randint(0, self.N_num, size=2, dtype=NodeCount)
-        self.start_node = Node(start)
-        self.goal_node = Node(goal)
+        self.start = start
+        self.goal = goal
 
         self.N_colors[start] = colors["YELLOW"]
         self.N_colors[goal] = colors["RED"]
@@ -64,29 +64,45 @@ class Graph:
         """
         neighbors = []
 
-        id = NodeCount(0)
+        id = 0
         while id < self.N_num:
             if (
-                self.edge_connections[id, state.id]
-                or self.edge_connections[state.id, id]
+                self.edge_connections[id, state]
+                or self.edge_connections[state, id]
             ):
-                neighbors.append(Node(id))
+                neighbors.append(id)
+
             id += 1
+
+        # print("neighbors", neighbors)
+        # exit(0)
+
+        # # updating the node-ui : will not work, as need to know closed for not re-entering node colors
+        # for node in neighbors:
+        #     id = node.id
+        #     self.N_colors[id] = colors["BLUE"]
+        #     self.N_radii[id] = 2 * NODE_RADIUS
 
         return neighbors
 
     def GoalTest(self, state: NodeType) -> bool:
-        foundGoal = state.id == self.goal_node.id
+        foundGoal = state == self.goal
+
+        # # updating the node-ui
+        # self.N_colors[id] = colors["RED"]
+        # self.N_radii[id] = 2 * NODE_RADIUS
+
         return foundGoal
 
     def update_nodes(self):
-        for open_ids in self.open_ids:
-            self.N_colors[open_ids[0].id] = colors["BLUE"]
-            self.N_radii[open_ids[0].id] = 4 * NODE_RADIUS
+        self.N_colors[self.open_ids] = colors["BLUE"]
+        self.N_radii[self.open_ids] = 2 * NODE_RADIUS
 
-        for closed_ids in self.closed_ids:
-            self.N_colors[closed_ids[0].id] = colors["RED"]
-            self.N_radii[closed_ids[0].id] = 1.5 * NODE_RADIUS
+        for id in self.closed_ids:
+            self.N_colors[id] = colors["RED"]
+            self.N_radii[id] = 1.5 * NODE_RADIUS
+
+        return
 
 
 def create_nodes(n: NodeCount) -> NodeLocs:

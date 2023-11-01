@@ -12,7 +12,7 @@ def RemoveSeen(nodeList, openList, closedList):
 
 def OccursIn(node, listOfPairs):
     for pair in listOfPairs:
-        if node.id == pair[0].id:
+        if node == pair[0]:
             return True
     return False
 

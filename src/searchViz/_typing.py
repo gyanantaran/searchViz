@@ -14,7 +14,7 @@ from numpy.typing import NDArray
 #     pass
 
 
-NodeType = Node
+NodeType = np.uint16
 NodeLocs = NDArray[np.float64]
 NodeList = typing.List[Node]
 NodeCount = np.uint16

@@ -12,28 +12,28 @@ from .constants import (
     RED,
     NODE_RADIUS,
     SEARCH_RATE,
+    SEARCH_METHOD,
+    NUM_NODES
 )
 
 
 from .Graph import Graph
-from ._typing import NodeCount
-
-from .Search import Search
 
 
 class Game:
-    def __init__(self, search: Search, num_nodes: NodeCount | int) -> None:
+    def __init__(self) -> None:
         pg.init()
 
         # main attributes of the game
-        self.graph = Graph(num_nodes)
-        self.search = search
+        self.graph = Graph(n=NUM_NODES)
+        
+        self.search = SEARCH_METHOD()
         self.search.graph = self.graph
 
         # pg initialization
         self.screen = pg.display.set_mode(SCR_SIZE)
         self.graph_surf = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
-        pg.display.set_caption(f"Search Method: {search.name}")
+        pg.display.set_caption(f"Search Method: {self.search.name}")
 
         # more helper attributes
         self.font = pg.font.Font(None, 36)

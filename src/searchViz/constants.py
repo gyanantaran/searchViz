@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 
-from .models import N_Distbn, E_Distbn
-from .Search import depthfirstsearch, breadthfirstsearch
+from .graphViz.models import N_Distbn, E_Distbn
 
 # Mode configuration
-MODE_SEARCH = "search"
-MODE_TSP = "tsp"
+SEARCH = "search"
+TSP = "tsp"
+GAME_MODE = SEARCH
 
 # Screen configuration
-SCREEN_WIDTH = 1700
-SCREEN_HEIGHT = 950
+SCREEN_WIDTH = 1500
+SCREEN_HEIGHT = 900
 SCR_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 
 # Search configuration
-SEARCH_METHOD = depthfirstsearch
-SEARCH_RATE = 0 #.0000000000000000005
+SEARCH_METHOD = "bfs"  # depthfirstsearch
+SEARCH_RATE = 1
 
 # Graph configuration
-NUM_NODES = 5000
+NUM_NODES = 2500
 NODE_RADIUS = 2
 
 

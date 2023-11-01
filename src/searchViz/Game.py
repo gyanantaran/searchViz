@@ -2,46 +2,55 @@
 
 
 import pygame as pg
-import time
-import numpy as np
 
 from .constants import (
-    E_COLOR,
     SCR_SIZE,
     BG_COLOR,
     RED,
-    NODE_RADIUS,
     SEARCH_RATE,
     SEARCH_METHOD,
     NUM_NODES,
-    MODE_SEARCH,
-    MODE_TSP
+    GAME_MODE,
+    TSP,
+    SEARCH,
 )
-
-
-from .Graph import Graph
+from .searchViz.Search import depthfirstsearch, breadthfirstsearch
 
 
 class Game:
-    def __init__(self, mode: str) -> None:
+    def __init__(self) -> None:
         pg.init()
 
-        # main attributes of the game
-        self.graph = Graph(n=NUM_NODES)
-        
-        if mode == MODE_SEARCH:
-            self.search = SEARCH_METHOD()
-            self.search.graph = self.graph
-            self.search_generator = self.search.search()
+        self.game_mode = GAME_MODE
 
-        elif mode == MODE_TSP:
-            # raise NotImplementedError
+        # main attributes of the game
+        if self.game_mode == SEARCH:
+            # need to figure out a better way to switch search method
+            match SEARCH_METHOD:
+                case "dfs":
+                    search = depthfirstsearch(n=NUM_NODES)
+                case "bfs":
+                    search = breadthfirstsearch(n=NUM_NODES)
+                case _:
+                    search = depthfirstsearch(n=NUM_NODES)
+
+            search_generator = search.search()
+
+            self.mode = search
+            self.mode_generator = search_generator
+
+        elif self.game_mode == TSP:
             pass
+            raise NotImplementedError
+            # self.mode = None
+            # self.mode_generator = None
+
+        self.mode_iteration = 0
 
         # pg initialization
         self.screen = pg.display.set_mode(SCR_SIZE)
         self.graph_surf = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
-        pg.display.set_caption(f"Search Method: {self.search.name}")
+        pg.display.set_caption(f"{self.game_mode} Search Method: {self.mode.name}")
 
         # more helper attributes
         self.font = pg.font.Font(None, 36)
@@ -65,10 +74,10 @@ class Game:
                 if event.button == 1:  # Left mouse button
                     click_x, click_y = event.pos
                     pg.draw.circle(
-                        self.graph_surf,
+                        self.screen,
                         RED,
                         (click_x, click_y),
-                        radius=5 * NODE_RADIUS,
+                        radius=5,
                     )
 
             # Handle spacebar key press
@@ -78,73 +87,38 @@ class Game:
 
         return None
 
-    def draw_graph(self) -> None:
-        # _start_time = time.time()
-        # print("\n🕰️\tDrawing the Graph")
+    def set_screen(self):
+        self.screen.blit(self.bg_surf, (0, 0))
+        self.handle_events()
+        self.screen.blit(self.graph_surf, (0, 0))
 
-        # Unpack frequently used variables
-        graph_surf = self.graph_surf
-        num_nodes = self.graph.N_num
-        nodes = self.graph.N_locs
-        colors = self.graph.N_colors
-        radius = self.graph.N_radii
-        edges = self.graph.edge_connections
-        edge_colors = self.graph.edge_colors
+        _txt = self.font.render(f"searchViz: {self.mode_iteration}", 1, (255, 255, 255))
+        self.screen.blit(_txt, (10, 10))
 
-        # Draw edges
-        edge_indices = np.transpose(np.where(edges))
-        for i, j in edge_indices:
-            # TODO: tuple type conversion overhead? Probably not
-            pg.draw.line(graph_surf, tuple(edge_colors[i, j]), tuple(nodes[i]), tuple(nodes[j]))
-
-        # Draw nodes
-        # TODO: vectorization of this possible? Probably not
-        for i in range(num_nodes):
-            pg.draw.circle(
-                graph_surf, color=colors[i], center=nodes[i], radius=radius[i]
-            )
-
-            # _txt = self.font.render(f"{i}", 1, (255, 255, 255))
-            # graph_surf.blit(_txt, nodes[i])
-
-        # _end_time = time.time()
-        # _elapsed_time = _end_time - _start_time
-        # print("✅\tCompleted the drawing!\n")
-
-        # print(f"\t🕰️ Took {_elapsed_time:.3f} seconds.\n")
-
-        return None
+        pg.display.flip()
 
     def run(self) -> None:
         last_time = pg.time.get_ticks()
-        step = 0
-        self.draw_graph()
+        self.mode.draw_graph(self.graph_surf)
 
         while self.running:
             cur_time = pg.time.get_ticks()
-
-            self.screen.blit(self.bg_surf, (0, 0))
-            self.handle_events()
-            self.screen.blit(self.graph_surf, (0, 0))
-
-            _txt = self.font.render(f"searchViz: {step}", 1, (255, 255, 255))
-            self.screen.blit(_txt, (10, 10))
-
-            pg.display.flip()
+            self.set_screen()
 
             # Time control
             if self.start_iterations:
                 _delta = cur_time - last_time
-                if _delta >= SEARCH_RATE * 1000:
-                    step += 1
-                    last_time = cur_time
-                    # APPLY SEARCH HERE
+                if _delta >= SEARCH_RATE:
+                    # APPLY GENERATOR HERE
                     try:
-                        next(self.search_generator)
+                        next(self.mode_generator)
                         self.graph_surf.blit(self.bg_surf, (0, 0))
-                        self.draw_graph()
+                        self.mode.draw_graph(self.graph_surf)
 
                     except StopIteration:
                         self.start_iterations = False
+
+                    self.mode_iteration += 1
+                    last_time = cur_time
 
         pg.quit()

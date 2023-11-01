@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from .Node import Node
-
 import numpy as np
 
 import typing
@@ -16,6 +14,6 @@ from numpy.typing import NDArray
 
 NodeType = np.uint16
 NodeLocs = NDArray[np.float64]
-NodeList = typing.List[Node]
+NodeList = typing.List[NodeType]
 NodeCount = np.uint16
-SearchMethod = typing.Callable[[], typing.List[Node]]
+SearchMethod = typing.Callable[[], NodeList]

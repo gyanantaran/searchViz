@@ -4,8 +4,7 @@ from searchViz.Game import Game
 
 
 def main():
-    mode = "search"
-    aGame = Game(mode=mode)
+    aGame = Game()
     aGame.run()
 
 

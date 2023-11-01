@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class Search(ABC):
-    def __init__(self, name: str, graph):
+    def __init__(self, name: str, graph): # TODO: type-hint graph argument to Search::__init__
         self.name = name
         # self.search = types.MethodType(search, Search)
         self.graph: Graph = graph
@@ -41,7 +41,6 @@ class depthfirstsearch(Search):
                 return path
             else:
                 closed.insert(0, nodePair)
-                self.graph.closed_ids.insert(0, nodePair[0])
 
                 # the following methods are time-hogs because of stack creations because of function calls
                 children = self.graph.MoveGen(node)
@@ -49,8 +48,8 @@ class depthfirstsearch(Search):
                 new = MakePairs(noLoops, node)
 
                 open[0:1] = new
-                self.graph.open_ids[0:1] = [node[0] for node in new]
 
+                self.graph.update_traversal(nodePair, new)
 
                 yield
         print("No path found")

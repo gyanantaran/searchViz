@@ -13,7 +13,9 @@ from .constants import (
     NODE_RADIUS,
     SEARCH_RATE,
     SEARCH_METHOD,
-    NUM_NODES
+    NUM_NODES,
+    MODE_SEARCH,
+    MODE_TSP
 )
 
 
@@ -21,14 +23,20 @@ from .Graph import Graph
 
 
 class Game:
-    def __init__(self) -> None:
+    def __init__(self, mode: str) -> None:
         pg.init()
 
         # main attributes of the game
         self.graph = Graph(n=NUM_NODES)
         
-        self.search = SEARCH_METHOD()
-        self.search.graph = self.graph
+        if mode == MODE_SEARCH:
+            self.search = SEARCH_METHOD()
+            self.search.graph = self.graph
+            self.search_generator = self.search.search()
+
+        elif mode == MODE_TSP:
+            # raise NotImplementedError
+            pass
 
         # pg initialization
         self.screen = pg.display.set_mode(SCR_SIZE)
@@ -41,7 +49,7 @@ class Game:
         self.bg_surf.fill(BG_COLOR)
 
         # control flow related attributes
-        self.start_search = False
+        self.start_iterations = False
         self.running = True
 
         print("🐼 searchViz has been initialized! 🎉")
@@ -66,13 +74,13 @@ class Game:
             # Handle spacebar key press
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
-                    self.start_search = not self.start_search
+                    self.start_iterations = not self.start_iterations
 
         return None
 
     def draw_graph(self) -> None:
-        _start_time = time.time()
-        print("\n🕰️\tDrawing the Graph")
+        # _start_time = time.time()
+        # print("\n🕰️\tDrawing the Graph")
 
         # Unpack frequently used variables
         graph_surf = self.graph_surf
@@ -81,12 +89,13 @@ class Game:
         colors = self.graph.N_colors
         radius = self.graph.N_radii
         edges = self.graph.edge_connections
+        edge_colors = self.graph.edge_colors
 
         # Draw edges
         edge_indices = np.transpose(np.where(edges))
         for i, j in edge_indices:
             # TODO: tuple type conversion overhead? Probably not
-            pg.draw.line(graph_surf, E_COLOR, tuple(nodes[i]), tuple(nodes[j]))
+            pg.draw.line(graph_surf, tuple(edge_colors[i, j]), tuple(nodes[i]), tuple(nodes[j]))
 
         # Draw nodes
         # TODO: vectorization of this possible? Probably not
@@ -98,11 +107,11 @@ class Game:
             # _txt = self.font.render(f"{i}", 1, (255, 255, 255))
             # graph_surf.blit(_txt, nodes[i])
 
-        _end_time = time.time()
-        _elapsed_time = _end_time - _start_time
-        print("✅\tCompleted the drawing!\n")
+        # _end_time = time.time()
+        # _elapsed_time = _end_time - _start_time
+        # print("✅\tCompleted the drawing!\n")
 
-        print(f"\t🕰️ Took {_elapsed_time:.3f} seconds.\n")
+        # print(f"\t🕰️ Took {_elapsed_time:.3f} seconds.\n")
 
         return None
 
@@ -111,7 +120,6 @@ class Game:
         step = 0
         self.draw_graph()
 
-        generated_open = self.search.search()
         while self.running:
             cur_time = pg.time.get_ticks()
 
@@ -125,19 +133,18 @@ class Game:
             pg.display.flip()
 
             # Time control
-            if self.start_search:
+            if self.start_iterations:
                 _delta = cur_time - last_time
                 if _delta >= SEARCH_RATE * 1000:
                     step += 1
                     last_time = cur_time
                     # APPLY SEARCH HERE
                     try:
-                        next(generated_open)
-                        self.graph.update_nodes()
+                        next(self.search_generator)
                         self.graph_surf.blit(self.bg_surf, (0, 0))
                         self.draw_graph()
 
                     except StopIteration:
-                        self.start_search = False
+                        self.start_iterations = False
 
         pg.quit()

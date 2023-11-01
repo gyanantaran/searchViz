@@ -6,6 +6,7 @@ from .constants import (
     colors,
     EDGE_CONFIDENCE,
     NODE_RADIUS,
+    NODE_COLOR,
 )
 
 from numpy import arange, full, uint8, random, column_stack, zeros, triu_indices
@@ -25,11 +26,11 @@ class Graph:
 
         # Node stuff
         self.N = arange(0, self.N_num, dtype=NodeCount)
-        self.N_locs = create_nodes(
+        self.N_locs = create_node_locs(
             NodeCount(self.N_num)
         )  # for typecasting int to np.uint16
 
-        self.N_colors = full((self.N_num, 4), colors["BLUE"], dtype=uint8)
+        self.N_colors = full((self.N_num, 4), NODE_COLOR, dtype=uint8)
         self.N_radii = full((self.N_num,), NODE_RADIUS, dtype=uint8)
 
         # start and end nodes
@@ -40,8 +41,9 @@ class Graph:
         self.N_colors[start] = colors["YELLOW"]
         self.N_colors[goal] = colors["RED"]
 
-        self.N_radii[start] = 5 * NODE_RADIUS
-        self.N_radii[goal] = 5 * NODE_RADIUS
+        # HARDCODED the ratio to NODE_RADIUS
+        self.N_radii[start] = 3 * NODE_RADIUS
+        self.N_radii[goal] = 3 * NODE_RADIUS
 
         # Edge stuff
         self.edge_connections, self.edge_colors = create_edges(self.N_locs)
@@ -88,24 +90,39 @@ class Graph:
     def GoalTest(self, state: NodeType) -> bool:
         foundGoal = state == self.goal
 
-        # # updating the node-ui
-        # self.N_colors[id] = colors["RED"]
-        # self.N_radii[id] = 2 * NODE_RADIUS
-
         return foundGoal
 
-    def update_nodes(self):
-        self.N_colors[self.open_ids] = colors["BLUE"]
-        self.N_radii[self.open_ids] = 2 * NODE_RADIUS
+    def update_traversal(self, closedNodePair, newNodesToOpen):
 
-        for id in self.closed_ids:
-            self.N_colors[id] = colors["RED"]
-            self.N_radii[id] = 1.5 * NODE_RADIUS
+        closed_id = closedNodePair[0]
+        open_ids = []
+        open_parent_ids = set()
+        for node in newNodesToOpen:
+            open_ids.append(node[0])
+            open_parent_ids.add(node[1])
+
+
+        self.open_ids[0:1] = open_ids
+        self.closed_ids.insert(0, closed_id)
+
+        # NOTE: HARDCODED the ratio to NODE_RADIUS
+        self.N_colors[open_ids] = colors["BLUE"]
+        self.N_radii[open_ids] = 1.25 * NODE_RADIUS
+
+        self.N_colors[closed_id] = colors["RED"]
+        self.N_radii[closed_id] = 1.5 * NODE_RADIUS
+
+        # Update edge-colors
+        for parent in open_parent_ids:
+            for child_id in open_ids:
+                # HARDCODED the increase in opacity of traversed edges
+                self.edge_colors[parent, child_id][3] += 200
+                self.edge_colors[child_id, parent][3] += 200
 
         return
 
 
-def create_nodes(n: NodeCount) -> NodeLocs:
+def create_node_locs(n: NodeCount) -> NodeLocs:
     """
     Returns a vector of `n` points, colors, radii:
     [
@@ -149,7 +166,7 @@ def create_edges(nodes: NodeLocs):
 
     # confidence number of times there will be an edge
     edge_connections = _toss <= _confidence
-    edge_colors = full((n, 4), fill_value=colors["WHITE"], dtype=uint8)
+    edge_colors = full((n, n, 4), fill_value=colors["WHITE"], dtype=uint8)
 
     # Stop the dot animation
     done.set()

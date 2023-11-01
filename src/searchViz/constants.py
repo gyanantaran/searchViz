@@ -3,9 +3,12 @@
 from .models import N_Distbn, E_Distbn
 from .Search import depthfirstsearch, breadthfirstsearch
 
+# Mode configuration
+MODE_SEARCH = "search"
+MODE_TSP = "tsp"
 
 # Screen configuration
-SCREEN_WIDTH = 2000
+SCREEN_WIDTH = 1700
 SCREEN_HEIGHT = 950
 SCR_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
@@ -39,9 +42,10 @@ EDGE_CONFIDENCE = E_Distbn(max_len=E_MAX_LEN, min_len=E_MIN_LEN, model=E_MODEL)
 RED = (255, 0, 0, 255)
 GREEN = (0, 255, 0, 255)
 BLUE = (0, 255, 255, 255)
-WHITE = (255, 255, 255, 120)
+WHITE = (255, 255, 255, 55)
 YELLOW = (255, 255, 153, 200)
 BLACK = (0, 0, 0, 255)
+GREY = (125, 125, 150, 255)
 
 BG_COLOR = BLACK  # Background color (RGB)
 E_COLOR = WHITE
@@ -53,4 +57,7 @@ colors: dict = {
     "WHITE": WHITE,
     "YELLOW": YELLOW,
     "BLACK": BLACK,
+    "GREY": GREY,
 }
+
+NODE_COLOR = colors["GREY"]

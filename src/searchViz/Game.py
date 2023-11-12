@@ -5,16 +5,16 @@ import pygame as pg
 
 from .constants import (
     SCR_SIZE,
-    BG_COLOR,
-    RED,
-    SEARCH_RATE,
-    SEARCH_METHOD,
-    NUM_NODES,
+    colors,
     GAME_MODE,
-    TSP,
-    SEARCH,
+    ITERATION_RATE,
+    TSP_MODE,
+    TSP_METHOD,
+    SEARCH_MODE,
+    SEARCH_METHOD,
 )
 from .searchViz.Search import depthfirstsearch, breadthfirstsearch
+from .tspViz.TSP import ACO, Random, Greedy
 
 
 class Game:
@@ -24,38 +24,48 @@ class Game:
         self.game_mode = GAME_MODE
 
         # main attributes of the game
-        if self.game_mode == SEARCH:
+        if self.game_mode == SEARCH_MODE:
             # need to figure out a better way to switch search method
             match SEARCH_METHOD:
                 case "dfs":
-                    search = depthfirstsearch(n=NUM_NODES)
+                    search = depthfirstsearch()
                 case "bfs":
-                    search = breadthfirstsearch(n=NUM_NODES)
+                    search = breadthfirstsearch()
                 case _:
-                    search = depthfirstsearch(n=NUM_NODES)
+                    search = depthfirstsearch()
 
             search_generator = search.search()
 
             self.mode = search
             self.mode_generator = search_generator
 
-        elif self.game_mode == TSP:
-            pass
-            raise NotImplementedError
-            # self.mode = None
-            # self.mode_generator = None
+        elif self.game_mode == TSP_MODE:
+            match TSP_METHOD:
+                case "ACO":
+                    tsp = ACO()
+                case "Greedy":
+                    tsp = Greedy()
+                case "Random":
+                    tsp = Random()
+                case _:
+                    exit(1)
 
-        self.mode_iteration = 0
+            tsp_generator = tsp.traverse()
+
+            self.mode = tsp
+            self.mode_generator = tsp_generator
+
+        self.mode_iter = 0
 
         # pg initialization
         self.screen = pg.display.set_mode(SCR_SIZE)
         self.graph_surf = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
-        pg.display.set_caption(f"{self.game_mode} Search Method: {self.mode.name}")
+        pg.display.set_caption(f"{self.game_mode} Method: {self.mode.name}")
 
         # more helper attributes
         self.font = pg.font.Font(None, 36)
         self.bg_surf = pg.Surface(self.screen.get_size())
-        self.bg_surf.fill(BG_COLOR)
+        self.bg_surf.fill(colors["BG_COLOR"])
 
         # control flow related attributes
         self.start_iterations = False
@@ -75,7 +85,7 @@ class Game:
                     click_x, click_y = event.pos
                     pg.draw.circle(
                         self.screen,
-                        RED,
+                        colors["RED"],
                         (click_x, click_y),
                         radius=5,
                     )
@@ -92,7 +102,9 @@ class Game:
         self.handle_events()
         self.screen.blit(self.graph_surf, (0, 0))
 
-        _txt = self.font.render(f"searchViz: {self.mode_iteration}", 1, (255, 255, 255))
+        _txt = self.font.render(
+            f"{self.game_mode}Viz: {self.mode_iter}", 1, (255, 255, 255)
+        )
         self.screen.blit(_txt, (10, 10))
 
     def run(self) -> None:
@@ -106,7 +118,7 @@ class Game:
             # Time control
             if self.start_iterations:
                 _delta = cur_time - last_time
-                if _delta >= SEARCH_RATE:
+                if _delta >= ITERATION_RATE:
                     # APPLY GENERATOR HERE
                     try:
                         next(self.mode_generator)
@@ -116,7 +128,7 @@ class Game:
                     except StopIteration:
                         self.start_iterations = False
 
-                    self.mode_iteration += 1
+                    self.mode_iter += 1
                     last_time = cur_time
 
             pg.display.flip()

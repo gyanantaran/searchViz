@@ -1,12 +1,15 @@
 # utility function used in `Search.py`
 
+from typing import List
 
-def RemoveSeen(nodeList, openList, closedList):
+
+def RemoveSeen(nodeList: List, openList: List, closedList: List):
     """An iterative function to remove seen nodes from nodeList"""
-    result = []
-    for n in nodeList:
-        if not (OccursIn(n, openList) or OccursIn(n, closedList)):
-            result.append(n)
+    seen_nodes = set()
+    seen_nodes.update(pair[0] for pair in openList)
+    seen_nodes.update(pair[0] for pair in closedList)
+
+    result = [n for n in nodeList if n not in seen_nodes]
     return result
 
 
@@ -24,7 +27,7 @@ def MakePairs(list, parent):
     return pairs
 
 
-def ReconstructPath(nodePair, closed):
+def ReconstructPath(nodePair: tuple, closed: List):
     path = [nodePair[0]]
     parent = nodePair[1]
 
@@ -36,8 +39,8 @@ def ReconstructPath(nodePair, closed):
     return path
 
 
-def FindLink(child, closed):
+def FindLink(child: int, closed: List) -> tuple:
     for link in closed:
         if child == link[0]:
             return link
-    return []
+    return ()

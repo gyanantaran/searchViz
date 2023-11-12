@@ -2,13 +2,14 @@
 
 from .search_utils import ReconstructPath, MakePairs, RemoveSeen
 
-# from typing import TYPE_CHECKING
+from ..constants import E_THICKNESS, NUM_NODES, SCR_SIZE
 
 from ..graphViz.Graph import Graph
 
 from .._typing import NodeCount, NodeType, NodeList
 
-from numpy import random
+from numpy import mean, random, where, transpose, zeros, array
+import pygame as pg
 
 
 class Search(Graph):
@@ -33,6 +34,68 @@ class Search(Graph):
 
         self.open_ids, self.closed_ids = [], []
 
+        self.origin = array(SCR_SIZE) / 2
+        self.shift_effect = 1
+        self.shifted_locs = zeros((self.N_num, 2))
+
+        self.avg_window = 10
+        self.shifted_effects = zeros((self.avg_window, 2))
+
+    def draw_graph(self, graph_surf) -> None:
+        # TODO: need make faster, blitting only those nodes/edges
+        # that were updated
+
+        # _start_time = time.time()
+        # print("\n🕰️\tDrawing the Graph")
+
+        if len(self.open_ids) > 0:
+            effect = self.shift_effect * (
+                self.N_locs[self.open_ids[0], :] - self.origin
+            )
+            self.shifted_effects[:-1, :] = self.shifted_effects[1:, :]
+            self.shifted_effects[-1, :] = effect
+
+            self.shifted_locs = self.N_locs
+
+        N_locs = self.N_locs - mean(self.shifted_effects, axis=0)
+
+        # Draw edges
+        edge_indices = transpose(where(self.edge_connections))
+        edge_colors = self.edge_colors[edge_indices[:, 0], edge_indices[:, 1]]
+
+        for (i, j), color in zip(edge_indices, edge_colors):
+            pg.draw.line(
+                graph_surf,
+                tuple(color),
+                tuple(N_locs[i]),
+                tuple(N_locs[j]),
+                E_THICKNESS,
+            )
+
+        # Draw nodes
+        N_colors = self.N_colors.astype(int)
+        N_radii = self.N_radii.astype(int)
+        node_data = list(
+            zip(
+                N_colors,
+                N_locs.astype(int),
+                N_radii,
+            )
+        )
+        for color, loc, radius in node_data:
+            pg.draw.circle(graph_surf, tuple(color), tuple(loc), radius)
+
+            # _txt = self.font.render(f"{i}", 1, (255, 255, 255))
+            # graph_surf.blit(_txt, nodes[i])
+
+        # _end_time = time.time()
+        # _elapsed_time = _end_time - _start_time
+        # print("✅\tCompleted the drawing!\n")
+
+        # print(f"\t🕰️ Took {_elapsed_time:.3f} seconds.\n")
+
+        return None
+
     ########################################################################
     #                   THE MOVEGEN AND GOALTEST FUNCTIONS
     ########################################################################
@@ -43,21 +106,15 @@ class Search(Graph):
         """
         neighbors = []
 
-        id = 0
-        while id < self.N_num:
-            if self.edge_connections[id, state] or self.edge_connections[state, id]:
-                neighbors.append(id)
+        node_id = 0
+        while node_id < self.N_num:
+            if (
+                self.edge_connections[node_id, state]
+                or self.edge_connections[state, node_id]
+            ):
+                neighbors.append(node_id)
 
-            id += 1
-
-        # print("neighbors", neighbors)
-        # exit(0)
-
-        # # updating the node-ui : will not work, as need to know closed for not re-entering node colors
-        # for node in neighbors:
-        #     id = node.id
-        #     self.N_colors[id] = colors["BLUE"]
-        #     self.N_radii[id] = 2 * NODE_RADIUS
+            node_id += 1
 
         return neighbors
 
@@ -98,7 +155,7 @@ class Search(Graph):
 
 
 class depthfirstsearch(Search):
-    def __init__(self, n: NodeCount | int):
+    def __init__(self, n: NodeCount | int = NUM_NODES):
         name = "DFS"
         super().__init__(n, name)
 
@@ -117,7 +174,7 @@ class depthfirstsearch(Search):
             else:
                 closed.insert(0, nodePair)
 
-                # the following methods are time-hogs because of stack creations because of function calls
+                # time-hogs because of stack creations because of function call
                 children = self.MoveGen(node)
                 noLoops = RemoveSeen(children, open, closed)
                 new = MakePairs(noLoops, node)
@@ -132,7 +189,7 @@ class depthfirstsearch(Search):
 
 
 class breadthfirstsearch(Search):
-    def __init__(self, n: NodeCount | int):
+    def __init__(self, n: NodeCount | int = NUM_NODES):
         name = "DFS"
         super().__init__(n, name)
 
@@ -151,7 +208,7 @@ class breadthfirstsearch(Search):
             else:
                 closed.insert(0, nodePair)
 
-                # the following methods are time-hogs because of stack creations because of function calls
+                # time-hogs because of stack creations because of function call
                 children = self.MoveGen(node)
                 noLoops = RemoveSeen(children, open, closed)
                 new = MakePairs(noLoops, node)

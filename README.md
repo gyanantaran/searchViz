@@ -2,7 +2,7 @@
 
 ## Demo
 
-[![Demo video -- searchViz](https://i.ibb.co/Wf1G03n/search-Viz-YT-thumbnail-GH.png)](https://youtu.be/kNGsOoWh9fM?t=2)
+[![Demo video -- searchViz](https://i.ibb.co/Wf1G03n/search-Viz-YT-thumbnail-GH.png)](wrong-link-https://youtu.be/kNGsOoWh9fM?t=2)
 
 
 

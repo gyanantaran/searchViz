@@ -15,10 +15,10 @@ TSP_METHOD = RANDOM_MODE
 
 # SEARCH CONFIGURATION
 # available options: dfs, bfs
-SEARCH_METHOD = "dfs"
+SEARCH_METHOD = "bfs"
 
 GAME_MODE = SEARCH_MODE
-ITERATION_RATE = 0
+ITERATION_RATE = 10
 
 
 # Graph configuration

@@ -20,7 +20,7 @@ def N_Distbn(length: int, model: str) -> Callable[[int], NodeLocs]:
         return random.uniform(0, length, n)
 
     def nodes_gaussian(n: int) -> NDArray[float64]:
-        return random.normal(length / 2, length / 7, n)
+        return random.normal(length / 2, length / 5, n)
         # return random.uniform(0, length, n)
 
     return nodes_gaussian if model == "gaussian" else nodes_uniform

@@ -35,10 +35,10 @@ class Search(Graph):
         self.open_ids, self.closed_ids = [], []
 
         self.origin = array(SCR_SIZE) / 2
-        self.shift_effect = 1
+        self.shift_effect = 0
         self.shifted_locs = zeros((self.N_num, 2))
 
-        self.avg_window = 10
+        self.avg_window = 20
         self.shifted_effects = zeros((self.avg_window, 2))
 
     def draw_graph(self, graph_surf) -> None:

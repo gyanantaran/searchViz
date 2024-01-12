@@ -4,14 +4,7 @@
 
 [![A long Walkthrough Video -- searchViz](https://i.ibb.co/Wf1G03n/search-Viz-YT-thumbnail-GH.png)](https://youtu.be/BKF-PEgd1PA?t=393)
 
-## A short Walkthrough
-
-[![Short Walkthrough Video -- searchViz](https://i.ibb.co/Wf1G03n/search-Viz-YT-thumbnail-GH.png)](https://youtu.be/kNGsOoWh9fM?t=2)
-
-
 <!-- https://user-images.githubusercontent.com/95016059/273106123-19ccd387-f563-4078-825d-e62327bfdde7.mp4 -->
-
-I need to add more visuals!
 
 ## Features
 
@@ -23,5 +16,9 @@ I need to add more visuals!
 1. Using vectorized functions in numpy
 
 Contributions and feedbacks are welcome! 
+
+## A short Walkthrough
+
+[![Short Walkthrough Video -- searchViz](https://i.ibb.co/Wf1G03n/search-Viz-YT-thumbnail-GH.png)](https://youtu.be/kNGsOoWh9fM?t=2)
 
 @vishalpaudel

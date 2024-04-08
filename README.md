@@ -1,4 +1,10 @@
-# searchViz - A Beautiful 🌹 and ⚡️ Fast Search Visualizer
+# searchViz - A Beautiful and ⚡️ Fast Search Visualizer
+
+
+
+https://github.com/gyanantaran/searchViz/assets/95016059/8a3eab8e-1456-48a5-a91c-750cf1e47f12
+
+
 
 ## A Nice Demo Video
 
